@@ -1,0 +1,51 @@
+version: '3'
+services:
+
+  apache:
+    build: ./apache
+    hostname: apache
+    volumes:
+      - ./apache/000-default.conf:/etc/apache2/sites-enabled/000-default.conf
+      - ./apache/www:/var/www
+    ports:
+      - ${PORT_WWW}:80
+    environment:
+      TZ: ${TZ}
+
+
+
+
+  mysql:
+    image: mysql:5.7.28
+    hostname: mysql
+    command: --default-authentication-plugin=mysql_native_password
+    restart: always
+    environment:
+      MYSQL_DATABASE: ${MYSQL_DATABASE}
+      MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD}
+      MYSQL_USER: ${MYSQL_USER}
+      MYSQL_PASSWORD: ${MYSQL_PASSWORD}
+      TZ: ${TZ}
+    volumes:
+      - ./mysql/var:/var/lib/mysql
+      - ./mysql/docker-entrypoint-initdb.d:/docker-entrypoint-initdb.d
+
+
+  adminer:
+    image: adminer
+    hostname: adminer
+    restart: always
+    ports:
+      - ${PORT_ADMINER}:8080
+    depends_on:
+      - mysql
+    environment:
+      TZ: ${TZ}
+
+  tools:
+    build: ./tools
+    hostname: tools
+    volumes:
+      - ./_logs:/srv/_logs
+    environment:
+      TZ: ${TZ}
