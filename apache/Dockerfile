@@ -27,7 +27,23 @@ RUN cd /tmp && \
     echo "extension=tideways_xhprof.so" > /etc/php/7.0/mods-available/tideways_xhprof.ini && \
     ln -s /etc/php/7.0/mods-available/tideways_xhprof.ini /etc/php/7.0/apache2/conf.d/30-tideways_xhprof.ini
 
-# RUN git clone https://github.com/perftools/xhgui.git /var/xhgui
+# Mongodb
+RUN pecl install mongodb && \
+    echo "extension=mongodb.so" > /etc/php/7.0/mods-available/mongodb.ini && \
+    ln -s /etc/php/7.0/mods-available/mongodb.ini /etc/php/7.0/apache2/conf.d/20-mongodb.ini && \
+    ln -s /etc/php/7.0/mods-available/mongodb.ini /etc/php/7.0/cli/conf.d/20-mongodb.ini
+
+# Xhgui
+RUN git clone https://github.com/perftools/xhgui.git /var/www/xhgui && \
+    chmod -R 0777 /var/www/xhgui/cache && \
+    cd tmp && \
+    curl -sS https://getcomposer.org/installer > composer-setup.php && \
+    php composer-setup.php --filename=composer && \
+    mv composer /bin/composer && \
+    rm composer-setup.php && \
+    cd /var/www/xhgui && \
+    composer install --prefer-dist && \
+    cp config/config.default.php config/config.php
 
 COPY ./run.sh /srv/run.sh
 

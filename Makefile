@@ -1,6 +1,6 @@
-#
-# Containers
-#
+#################################
+# Application workflow
+#################################
 
 # Run all containers
 .PHONY: up
@@ -11,9 +11,24 @@ up:
 down:
 	@docker-compose down
 
-#
-# Tools
-#
+# Reload all services
+.PHONY: reload
+reload: nginx-reload apache-reload
+
+# Apache reload
+.PHONY: apache-reload
+apache-reload:
+	@docker-compose exec apache service apache2 reload
+
+# Nginx reload
+.PHONY: nginx-reload
+nginx-reload:
+	@docker-compose exec nginx sh -c 'nginx -s reload'
+
+
+#################################
+# Test and debug
+#################################
 
 # Runs tool container
 .PHONY: tools
@@ -38,11 +53,6 @@ mysqldump:
 # Apache
 #
 
-# reload
-.PHONY: apache-reload
-apache-reload:
-	@docker-compose exec apache service apache2 reload
-
 # apache error log
 .PHONY: apache-error
 apache-error:
@@ -58,8 +68,7 @@ apache-access:
 apache-time:
 	@docker-compose exec apache tail -f /var/log/apache2/time.log
 
-
-
+# Clean
 .PHONY: clean
 clean:
 	@docker-compose down
