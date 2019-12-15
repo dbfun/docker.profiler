@@ -25,6 +25,13 @@ apache-reload:
 nginx-reload:
 	@docker-compose exec nginx sh -c 'nginx -s reload'
 
+#################################
+# Reconfigure
+#################################
+
+.PHONY: reconfigure-bitrix
+reconfigure-bitrix:
+	@docker-compose exec apache php /srv/bitrix-change-db.php
 
 #################################
 # Test and debug

@@ -45,7 +45,8 @@ RUN git clone https://github.com/perftools/xhgui.git /var/www/xhgui && \
     composer install --prefer-dist && \
     cp config/config.default.php config/config.php
 
-COPY ./run.sh /srv/run.sh
+WORKDIR /srv
+COPY ./srv /srv
 
 ENTRYPOINT ["/tini", "-g", "--", "/srv/run.sh"]
 CMD "/srv/run.sh"

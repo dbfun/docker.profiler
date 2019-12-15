@@ -8,6 +8,8 @@ services:
       - ./nginx/nginx.conf:/etc/nginx/conf.d/default.conf
       - ./_site/www:/srv/site
       - xhgui-volume:/srv/xhgui
+    env_file:
+      - .env
     ports:
       - ${PORT_NGINX}:80
       - ${PORT_XHGUI}:81
@@ -20,21 +22,20 @@ services:
       - ./apache/000-default.conf:/etc/apache2/sites-enabled/000-default.conf
       - ./_site/www:/var/www/site
       - xhgui-volume:/var/www/xhgui
-    environment:
-      TZ: ${TZ}
-      XHGUI_MONGO_HOST: "mongodb://mongo:27017"
+      #dev
+      - ./apache/srv:/srv
+    env_file:
+      - .env
+
+
 
   mysql:
     image: mysql:5.7.28
     hostname: mysql
     command: --default-authentication-plugin=mysql_native_password
     restart: always
-    environment:
-      MYSQL_DATABASE: ${MYSQL_DATABASE}
-      MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD}
-      MYSQL_USER: ${MYSQL_USER}
-      MYSQL_PASSWORD: ${MYSQL_PASSWORD}
-      TZ: ${TZ}
+    env_file:
+      - .env
     volumes:
       - ./mysql/var:/var/lib/mysql
       - ./mysql/docker-entrypoint-initdb.d:/docker-entrypoint-initdb.d
@@ -52,16 +53,16 @@ services:
       - ${PORT_ADMINER}:8080
     depends_on:
       - mysql
-    environment:
-      TZ: ${TZ}
+    env_file:
+      - .env
 
   tools:
     build: ./tools
     hostname: tools
     volumes:
       - ./_logs:/srv/_logs
-    environment:
-      TZ: ${TZ}
+    env_file:
+      - .env
 
 volumes:
   xhgui-volume:
