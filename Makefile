@@ -31,7 +31,8 @@ nginx-reload:
 
 .PHONY: reconfigure-bitrix
 reconfigure-bitrix:
-	@docker-compose exec apache php /srv/bitrix-change-db.php
+	@docker-compose exec apache php /srv/bitrix-reconfigure.php
+	@docker-compose exec mysql bash /srv/bitrix-reconfigure.sh
 
 #################################
 # Test and debug
@@ -41,6 +42,19 @@ reconfigure-bitrix:
 .PHONY: tools
 tools:
 	@docker-compose run tools bash
+
+# Runs mysql
+.PHONY: mysql
+mysql:
+	@docker-compose exec mysql mysql
+
+.PHONY: mysql-cache-enable
+mysql-cache-enable:
+	@docker-compose exec mysql mysql -e 'SET GLOBAL query_cache_size = 134217728; SET GLOBAL query_cache_type = "ON"'
+
+.PHONY: mysql-cache-disable
+mysql-cache-disable:
+	@docker-compose exec mysql mysql -e 'SET GLOBAL query_cache_size = 0; SET GLOBAL query_cache_type = "OFF"'
 
 #
 # MySQL
